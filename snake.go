@@ -1,21 +1,20 @@
 package main
 
 import (
-	"log"
 	"os"
 
 	"github.com/nsf/termbox-go"
 )
 
 func main() {
-	f, err := os.OpenFile("debug.log", os.O_APPEND|os.O_WRONLY, 0666)
-	if err != nil {
-		panic(err)
-	}
-	defer f.Close()
-	log.SetOutput(f)
+	//f, err := os.OpenFile("debug.log", os.O_APPEND|os.O_WRONLY, 0666)
+	//if err != nil {
+	//    panic(err)
+	//}
+	//defer f.Close()
+	//log.SetOutput(f)
 
-	err = termbox.Init()
+	err := termbox.Init()
 	if err != nil {
 		panic(err)
 	}
