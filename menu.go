@@ -75,14 +75,14 @@ loop:
 }
 
 func drawMenu(canvas *Canvas, nextFunc func(signal int)) {
-	title := []rune("贪 食 蛇")
+	title := []rune(gLangPkg["snake"])
 	tips := [][]rune{
-		[]rune("使 用  h j k l 进 行 移 动"),
-		[]rune("使 用  q 强 制 退 出 游 戏"),
+		[]rune(gLangPkg["move_tip"]),
+		[]rune(gLangPkg["quit_tip"]),
 	}
 	items := [][]rune{
-		[]rune("开 始 游 戏"),
-		[]rune("退 出 游 戏"),
+		[]rune(gLangPkg["start_game"]),
+		[]rune(gLangPkg["end_game"]),
 	}
 
 	drawBlock(canvas, CONFIG_BORDER)

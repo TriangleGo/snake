@@ -6,6 +6,10 @@ import (
 	"github.com/nsf/termbox-go"
 )
 
+func init() {
+	SetGloablLang("chinese")
+}
+
 func main() {
 	//f, err := os.OpenFile("debug.log", os.O_APPEND|os.O_WRONLY, 0666)
 	//if err != nil {

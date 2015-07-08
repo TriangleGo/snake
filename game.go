@@ -50,8 +50,8 @@ func drawGame(canvas *Canvas, comeBackFunc func()) {
 
 func drawLost(canvas *Canvas) {
 	tips := [][]rune{
-		[]rune("你 输 了 ！ "),
-		[]rune("使 用 空 格 键 返 回 菜 单 "),
+		[]rune(gLangPkg["you_lose"]),
+		[]rune(gLangPkg["back_to_menu"]),
 	}
 
 	y := 6
