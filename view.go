@@ -22,6 +22,7 @@ const (
 var pieceColors = []termbox.Attribute{
 	termbox.ColorBlack,
 	termbox.ColorGreen,
+	termbox.ColorCyan,
 	termbox.ColorMagenta,
 }
 
@@ -67,7 +68,7 @@ var instructions = []string{
 	"DEBUG: %s",
 }
 
-func render(g *Game) {
+func Render(g *Game) {
 	termbox.Clear(COLOR_BACKGROUND, COLOR_BACKGROUND)
 	tbprint(TITLE_START_X, TITLE_START_Y, COLOR_INSTRUCTIONS, COLOR_BACKGROUND, TITLE)
 

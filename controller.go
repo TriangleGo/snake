@@ -23,7 +23,7 @@ func main() {
 	}()
 
 	g := NewGame()
-	render(g)
+	Render(g)
 
 	for {
 		select {
@@ -33,10 +33,15 @@ func main() {
 			}
 			switch {
 			case ev.Ch == 'h' || ev.Key == termbox.KeyArrowLeft:
+				g.SetDirection(DIRECTION_LEFT)
 			case ev.Ch == 'j' || ev.Key == termbox.KeyArrowDown:
+				g.SetDirection(DIRECTION_DOWN)
 			case ev.Ch == 'k' || ev.Key == termbox.KeyArrowUp:
+				g.SetDirection(DIRECTION_UP)
 			case ev.Ch == 'l' || ev.Key == termbox.KeyArrowRight:
+				g.SetDirection(DIRECTION_RIGHT)
 			case ev.Key == termbox.KeySpace:
+				g.Pause()
 			case ev.Ch == 'q' || ev.Key == termbox.KeyEsc:
 				return
 			}
@@ -45,7 +50,7 @@ func main() {
 			g.Play()
 
 		default:
-			render(g)
+			Render(g)
 			time.Sleep(ANIMATION_SPEED)
 		}
 	}
