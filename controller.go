@@ -41,6 +41,9 @@ func main() {
 				return
 			}
 
+		case <-g.Timer.C:
+			g.Play()
+
 		default:
 			render(g)
 			time.Sleep(ANIMATION_SPEED)
