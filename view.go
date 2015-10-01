@@ -7,7 +7,7 @@ import (
 	"github.com/nsf/termbox-go"
 )
 
-const IS_DEBUG = true
+const IS_DEBUG = false
 
 var globalDebugText string
 
@@ -57,8 +57,10 @@ var instructions = []string{
 	"down:  j | ↓",
 	"up:    k | ↑",
 	"right: l | →",
-	"Pause: <Space>",
-	"Exit:  q | <Esc>",
+	"",
+	"Pause:   <Space>",
+	"Restart: <Space>",
+	"Exit:    q | <Esc>",
 	"",
 	"Score: %v",
 	"Speed: %v",

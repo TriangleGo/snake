@@ -2,13 +2,13 @@ package main
 
 import (
 	"container/list"
-	"fmt"
 	"math/rand"
+	"sync"
 	"time"
 )
 
 // Speeds
-const SPEED_SLOWEST = 700 * time.Millisecond
+const SPEED_SLOWEST = 300 * time.Millisecond
 const SPEED_FASTEST = 5 * time.Millisecond
 
 type GameState int
@@ -45,6 +45,7 @@ type Game struct {
 	Direction Direction
 
 	Timer *time.Timer
+	Mutex sync.Mutex
 }
 
 func NewGame() *Game {
@@ -59,6 +60,8 @@ func (this *Game) ResetGame() {
 		this.Board[i] = make([]int, BOARD_WIDTH)
 	}
 
+	this.State = GAME_STARTED
+	this.Score = 0
 	this.Direction = DIRECTION_RIGHT
 
 	this.Snake = list.New()
@@ -77,14 +80,10 @@ func (this *Game) ResetGame() {
 }
 
 func (this *Game) Play() {
-	globalDebugText = fmt.Sprintf("Food: %v State: %d", this.Food, this.State)
+	this.Mutex.Lock()
+	defer this.Mutex.Unlock()
 
 	if this.State != GAME_STARTED {
-		return
-	}
-
-	if this.checkFail() {
-		this.Timer.Stop()
 		return
 	}
 
@@ -105,11 +104,21 @@ func (this *Game) Play() {
 	}
 
 	this.Snake.PushFront(newHeader)
+
+	if this.checkFail() {
+		this.Timer.Stop()
+		this.Snake.Remove(this.Snake.Front())
+		this.snakeToBoard(true)
+		this.State = GAME_OVER
+		return
+	}
+
 	if this.checkEat() {
 		this.randomFood()
-		this.foodToBoard(true)
 		this.Score++
 		this.updateSpeed()
+
+		this.foodToBoard(true)
 	} else {
 		this.Snake.Remove(this.Snake.Back())
 	}
@@ -118,34 +127,30 @@ func (this *Game) Play() {
 	this.Timer.Reset(this.Speed)
 }
 
-func (this *Game) Pause() {
+func (this *Game) PauseOrRestart() {
 	switch this.State {
 	case GAME_STARTED:
-		this.Timer.Stop()
 		this.State = GAME_PAUESD
+		this.Timer.Stop()
 
 	case GAME_PAUESD:
+		this.State = GAME_STARTED
 		this.Timer.Reset(this.Speed)
+
+	case GAME_OVER:
+		this.ResetGame()
 		this.State = GAME_STARTED
 	}
 }
 
 func (this *Game) SetDirection(d Direction) {
 	switch this.Direction {
-	case DIRECTION_LEFT:
-		if d == DIRECTION_RIGHT {
+	case DIRECTION_LEFT, DIRECTION_RIGHT:
+		if d == DIRECTION_LEFT || d == DIRECTION_RIGHT {
 			return
 		}
-	case DIRECTION_RIGHT:
-		if d == DIRECTION_LEFT {
-			return
-		}
-	case DIRECTION_DOWN:
-		if d == DIRECTION_UP {
-			return
-		}
-	case DIRECTION_UP:
-		if d == DIRECTION_DOWN {
+	case DIRECTION_UP, DIRECTION_DOWN:
+		if d == DIRECTION_UP || d == DIRECTION_DOWN {
 			return
 		}
 	}
@@ -186,12 +191,25 @@ func (this *Game) foodToBoard(setOrUnset bool) {
 
 func (this *Game) randomFood() {
 	unUsedPoints := make([]Point, 0, 8)
+	snakePoints := make([]Point, 0, 8)
+
+	for e := this.Snake.Front(); e != nil; e = e.Next() {
+		point := e.Value.(Point)
+		snakePoints = append(snakePoints, point)
+	}
 
 	for y := 0; y < BOARD_HEIGHT; y++ {
 		for x := 0; x < BOARD_WIDTH; x++ {
-			if this.Board[y][x] == 0 {
-				unUsedPoints = append(unUsedPoints, Point{x, y})
+			if this.Board[y][x] != 0 {
+				continue
 			}
+			point := Point{x, y}
+			for i := range snakePoints {
+				if point == snakePoints[i] {
+					continue
+				}
+			}
+			unUsedPoints = append(unUsedPoints, point)
 		}
 	}
 
@@ -231,7 +249,7 @@ func (this *Game) checkFail() bool {
 		}
 	}
 
-	if header.X < 0 || header.X > BOARD_WIDTH || header.Y < 0 || header.Y > BOARD_HEIGHT {
+	if header.X < 0 || header.X > BOARD_WIDTH-1 || header.Y < 0 || header.Y > BOARD_HEIGHT-1 {
 		return true
 	}
 

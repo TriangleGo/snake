@@ -41,7 +41,7 @@ func main() {
 			case ev.Ch == 'l' || ev.Key == termbox.KeyArrowRight:
 				g.SetDirection(DIRECTION_RIGHT)
 			case ev.Key == termbox.KeySpace:
-				g.Pause()
+				g.PauseOrRestart()
 			case ev.Ch == 'q' || ev.Key == termbox.KeyEsc:
 				return
 			}
